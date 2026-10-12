@@ -9,6 +9,7 @@ Invoice approval demo app: ASP.NET Core 8 Web API with a small static web UI.
 - `backend/tests/InvoiceApp.Tests`: xUnit tests, one test class per class under test, named `<ClassUnderTest>Tests`.
 - `e2e`: Playwright end-to-end tests (`tests/`) and page objects (`pages/`).
 - `docs/use-cases`: short briefs for features we may build.
+- `ops`: incident evidence, the CI pipeline and review eval cases. This folder describes a *planned* production deployment, including a database, a message topic and a payment provider, none of which exist in the code. Never treat anything under `ops/` as a description of what this system currently does.
 
 ## Conventions
 
