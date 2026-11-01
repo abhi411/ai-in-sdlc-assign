@@ -23,20 +23,17 @@ print_banner() {
   printf '========================================\n\n'
 }
 
-print_banner "Segment 1: git branch"
-git branch --show-current
-
-print_banner "Segment 2: architecture test (pass)"
+print_banner "Architecture test (pass)"
 dotnet test backend/InvoiceApp.sln --filter "FullyQualifiedName~ArchitectureTests"
 
-print_banner "Segment 3: sabotage and run the architecture test (expected failure)"
+print_banner "Sabotage and run the architecture test (expected failure)"
 python3 - "$TARGET" <<'PY'
 import sys
 from pathlib import Path
 path = Path(sys.argv[1])
 text = path.read_text()
-needle = "namespace InvoiceApp.Domain;\n\n"
-insert = "namespace InvoiceApp.Domain;\n\nprivate static readonly System.Net.Http.HttpClient Sneaky = new();\n"
+needle = "public class Invoice\n{\n"
+insert = "public class Invoice\n{\n    private static readonly System.Net.Http.HttpClient Sneaky = new();\n"
 if "Sneaky" not in text:
     updated = text.replace(needle, insert, 1)
     path.write_text(updated)
@@ -47,19 +44,7 @@ else
   echo "Expected failure captured: the sabotage broke the domain file as intended."
 fi
 
-print_banner "Segment 4: revert the sabotage"
+print_banner "Revert the sabotage"
 cp "$BACKUP" "$TARGET"
-
-print_banner "Segment 5: race test"
-dotnet test backend/InvoiceApp.sln --filter "FullyQualifiedName~ApprovalConcurrencyTests"
-
-print_banner "Segment 6: eval summary"
-sed -n '1,80p' submission/05-evals/results.md
-
-print_banner "Segment 7: captured metrics"
-printf '\n--- live git metrics ---\n'
-cat submission/07-measurement/evidence/capture_git_metrics_output.txt
-printf '\n--- scenario CI metrics ---\n'
-cat submission/07-measurement/evidence/ci-metrics-output.txt
 
 printf '\nDemo run complete; sabotage has been reverted.\n'

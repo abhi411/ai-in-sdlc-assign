@@ -33,5 +33,3 @@ Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration:
 The direct parallel-approval check does not establish a clean double-approve race in this specific run: only 1 of 32 approvals succeeded, and 31 failed.
 
 This is evidence against the claim that the race is reliably real under the current test pattern. The code path is still non-atomic across `Find` and `Update`, so a race remains theoretically possible, but the concrete test result here does not show a repeated double-approve success under the same execution pattern.
-
-Human decision: not proven as a real, repeatable bug in this repo from this direct evidence; keep it as an inferred concurrency risk rather than a confirmed defect unless a stronger reproduction is found.

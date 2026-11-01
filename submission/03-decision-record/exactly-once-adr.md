@@ -16,7 +16,7 @@ This ADR addresses the critical requirement for exactly-once submission of appro
 
 The core problem is guaranteeing that an invoice, once approved, results in exactly one payment attempt with PayEx, despite network ambiguities (30s timeout), system crashes, and concurrent user actions. Challenges include preventing duplicate payments, ensuring all approved invoices are eventually paid, and maintaining a robust, auditable trail.
 
-## 3. Options (Human Decision)
+## 3. Options
 
 We considered three primary options for handling PayEx submissions:
 
@@ -28,11 +28,11 @@ We considered three primary options for handling PayEx submissions:
 
 3.  **Optimistic Submission + Nightly Reconciliation:** The app makes a best-effort payment submission, with a nightly job to reconcile discrepancies. This option is rejected due to high duplicate/missed payment risk and unacceptable delays in reconciliation for a financial process, especially at month-end volumes.
 
-## 4. Initial Recommendation (Human Decision)
+## 4. Initial Recommendation 
 
 The initial recommendation was **Option 1 (Idempotency Key + Dedupe Table)**, primarily due to its perceived "exactly once in effect" guarantee and fit with Azure SQL. This was contingent on critical, unverified assumptions about PayEx supporting idempotency keys and lookup mechanisms.
 
-## 5. Stress Test Outcomes (Human Decision)
+## 5. Stress Test Outcomes 
 
 Further analysis, including stress testing (`session-b-pressure-1.md`, `session-b-pressure-2.md`), was performed on the leading candidate, Option 1 (Idempotency Key + Dedupe Table). It confirmed that the recommendation *only moves* if the core assumption about PayEx's idempotency support is *false*. If PayEx does not support a stable idempotency key or reliable post-timeout lookup, then Option 1 is not safe, as retries after a 30-second timeout could create duplicate payments. The team's familiarity or inexperience does not override this fundamental dependency on PayEx's capabilities.
 
@@ -51,12 +51,12 @@ A detailed failure analysis (`session-c-3am.md`) for the initially chosen Option
 
 The analysis revealed that detection relies on SQL backlogs and retry job logs, but crucial financial risks like actual duplicate payments or successful payments after timeouts are *invisible* without explicit PayEx lookup or external reconciliation.
 
-## 7. Race Evidence (Human Decision)
+## 7. Race Evidence 
 
 Concurrency testing (`race-evidence.md`) on the current `ApprovalService.Approve` showed that while the check (`EnsurePending`) and update (`_repository.Update`) are not atomic, a clean, repeatable double-approve race was *not reliably reproducible* in the specific test run (1 of 32 succeeded, 31 failed). This suggests the in-memory repository's locking might provide some incidental protection, but the non-atomic nature of the operation still presents a theoretical concurrency risk that needs to be addressed when moving to a durable store.
 *   **What would change it:** A clear, repeatable reproduction of a double-approve success under load in the current in-memory implementation, or a formal proof of atomicity for the check-then-update sequence across a durable SQL transaction.
 
-## 8. Cost Estimate (Human Decision, Option 1 comparison)
+## 8. Cost Estimate (Option 1 comparison)
 
 The cost analysis (`session-d-cost.md`) for Option 1 (Idempotency Key + Dedupe Table) provided the following estimates. This section is intentionally a comparison of the rejected Option 1, showing why the risky path is materially more expensive once operational and reconciliation cost are included.
 
@@ -67,7 +67,7 @@ The cost analysis (`session-d-cost.md`) for Option 1 (Idempotency Key + Dedupe T
 *   **Largest Uncertainty:** The most significant cost driver and uncertainty remains whether PayEx truly honors the idempotency key. If not, build effort could increase by ESTIMATE 20-60%, and operational costs would rise materially.
 *   **What would change it:** A definitive, verifiable contract from PayEx regarding idempotency and lookup, or a significant change in the business's risk tolerance for duplicate payments or missed payments.
 
-## 9. Final Decision (Human Decision)
+## 9. Final Decision 
 
 Given the unverified assumptions about PayEx's idempotency and lookup capabilities, and the significant financial and operational risks highlighted by the 3 a.m. failure analysis if those assumptions prove false, the final decision is to adopt **Option 2: Transactional Outbox + Worker.**
 
