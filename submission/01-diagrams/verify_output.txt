@@ -1,0 +1,128 @@
+== E1 ==
+4:  let session = JSON.parse(sessionStorage.getItem('session') || 'null');
+16:  async function api(path, options = {}) {
+41:    const invoices = await api('/invoices');
+52:        submit.addEventListener('click', async () => { await api(`/invoices/${invoice.id}/submit`, { method: 'POST' }); refresh(); });
+72:      approve.addEventListener('click', () => decide(`/approvals/${invoice.id}/approve`, {}));
+73:      reject.addEventListener('click', () => decide(`/approvals/${invoice.id}/reject`, { reason: reason.value }));
+82:  async function decide(path, payload) {
+85:      await api(path, { method: 'POST', body: JSON.stringify(payload) });
+93:    if (session) api('/auth/logout', { method: 'POST' }).catch(() => {});
+95:    sessionStorage.removeItem('session');
+103:      const result = await api('/auth/login', {
+108:      sessionStorage.setItem('session', JSON.stringify(session));
+120:      await api('/invoices', {
+
+== E2 ==
+6:var builder = WebApplication.CreateBuilder(args);
+
+== E3 ==
+19:app.UseDefaultFiles();
+20:app.UseStaticFiles();
+
+== E4 ==
+backend/src/InvoiceApp.Api/Auth/SessionAuthMiddleware.cs:4:public class SessionAuthMiddleware
+backend/src/InvoiceApp.Api/Auth/SessionAuthMiddleware.cs:10:    public SessionAuthMiddleware(RequestDelegate next, SessionStore sessions)
+backend/src/InvoiceApp.Api/Auth/SessionAuthMiddleware.cs:19:        var needsSession = path.StartsWithSegments("/api") && !path.StartsWithSegments("/api/auth/login");
+backend/src/InvoiceApp.Api/Auth/SessionAuthMiddleware.cs:29:                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+backend/src/InvoiceApp.Api/Program.cs:21:app.UseMiddleware<SessionAuthMiddleware>();
+
+== E5 ==
+backend/src/InvoiceApp.Api/Auth/SessionStore.cs:7:public class SessionStore
+backend/src/InvoiceApp.Api/Auth/SessionStore.cs:11:    public string Create(UserSession session)
+backend/src/InvoiceApp.Api/Auth/SessionStore.cs:18:    public UserSession? Get(string? token) =>
+backend/src/InvoiceApp.Api/Auth/SessionStore.cs:21:    public void Remove(string token) => _sessions.TryRemove(token, out _);
+backend/src/InvoiceApp.Api/Program.cs:13:builder.Services.AddSingleton<SessionStore>();
+
+== E6 ==
+8:public class RequireRoleAttribute : ActionFilterAttribute
+12:    public RequireRoleAttribute(params string[] roles)
+17:    public override void OnActionExecuting(ActionExecutingContext context)
+23:            context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+
+== E7 ==
+9:public class AuthController : ControllerBase
+24:    public ActionResult<LoginResponse> Login([FromBody] LoginRequest request)
+39:    public IActionResult Logout()
+
+== E7a ==
+backend/src/InvoiceApp.Api/Program.cs:12:builder.Services.Configure<DemoUsersOptions>(builder.Configuration);
+backend/src/InvoiceApp.Api/Auth/UserSession.cs:5:public class DemoUser
+backend/src/InvoiceApp.Api/Auth/UserSession.cs:12:public class DemoUsersOptions
+backend/src/InvoiceApp.Api/Auth/UserSession.cs:14:    public List<DemoUser> Users { get; set; } = new();
+backend/src/InvoiceApp.Api/appsettings.json:9:  "Users": [
+
+== E8 ==
+9:public class InvoicesController : ApiControllerBase
+23:    public ActionResult<IReadOnlyList<Invoice>> GetAll([FromQuery] string? status)
+25:        var invoices = _repository.GetAll();
+41:    public ActionResult<Invoice> GetById(string id)
+43:        var invoice = _repository.GetById(id);
+48:    public ActionResult<Invoice> Create([FromBody] CreateInvoiceRequest request)
+70:    public ActionResult<Invoice> Submit(string id) => Handle(() => _approvals.Submit(id));
+72:    [HttpDelete("{id}")]
+73:    [RequireRole("Admin")]
+74:    public IActionResult Delete(string id) =>
+
+== E9 ==
+9:[RequireRole("Approver", "Admin")]
+10:public class ApprovalsController : ApiControllerBase
+22:    public ActionResult<Invoice> Approve(string invoiceId) =>
+23:        Handle(() => _approvals.Approve(invoiceId, HttpContext.GetSession().Username));
+26:    public ActionResult<Invoice> Reject(string invoiceId, [FromBody] RejectRequest request) =>
+27:        Handle(() => _approvals.Reject(invoiceId, HttpContext.GetSession().Username, request.Reason));
+
+== E10 ==
+6:public abstract class ApiControllerBase : ControllerBase
+9:    protected ActionResult<Invoice> Handle(Func<Invoice> action)
+17:            return NotFound(new { error = ex.Message });
+21:            return Conflict(new { error = ex.Message });
+25:            return BadRequest(new { error = ex.Message });
+
+== E11 ==
+7:public class ApprovalService
+16:    public Invoice Submit(string invoiceId)
+31:    public Invoice Approve(string invoiceId, string approver)
+34:        EnsurePending(invoice);
+43:    public Invoice Reject(string invoiceId, string approver, string reason)
+51:        EnsurePending(invoice);
+65:    private static void EnsurePending(Invoice invoice)
+
+== E12 ==
+3:public interface IInvoiceRepository
+
+== E13 ==
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:5:/// <summary>In-memory store so the demo app runs with no database. Seeded with a few invoices.</summary>
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:6:public class InMemoryInvoiceRepository : IInvoiceRepository
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:22:        lock (_lock) return _invoices.ToList();
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:27:        lock (_lock) return _invoices.FirstOrDefault(i => i.Id == id);
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:33:        lock (_lock) return _invoices.Where(i => wanted.Contains(i.Id)).ToList();
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:38:        lock (_lock)
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:52:        lock (_lock)
+backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs:61:        lock (_lock) return _invoices.RemoveAll(i => i.Id == id) > 0;
+backend/src/InvoiceApp.Api/Program.cs:14:builder.Services.AddSingleton<IInvoiceRepository, InMemoryInvoiceRepository>();
+
+== E14 ==
+backend/src/InvoiceApp.Domain/Invoice.cs:3:public class Invoice
+backend/src/InvoiceApp.Domain/InvoiceStatus.cs:3:public enum InvoiceStatus
+
+== E15 ==
+4:public class DiscountCalculator
+
+== E16 ==
+backend/tests/InvoiceApp.Tests/ApprovalServiceTests.cs:6:public class ApprovalServiceTests
+backend/tests/InvoiceApp.Tests/FakeInvoiceRepository.cs:5:internal class FakeInvoiceRepository : IInvoiceRepository
+
+== E17 ==
+10:  build-and-test:
+17:      - run: dotnet build backend/InvoiceApp.sln --configuration Release
+18:      - run: dotnet test backend/InvoiceApp.sln --configuration Release --no-build
+
+== E18 ==
+e2e/playwright.config.ts:1:import { defineConfig, devices } from '@playwright/test';
+e2e/playwright.config.ts:3:export default defineConfig({
+
+== E19 ==
+backend/src/InvoiceApp.Api/InvoiceApp.Api.csproj:8:    <ProjectReference Include="..\InvoiceApp.Domain\InvoiceApp.Domain.csproj" />
+backend/tests/InvoiceApp.Tests/InvoiceApp.Tests.csproj:15:    <ProjectReference Include="..\..\src\InvoiceApp.Domain\InvoiceApp.Domain.csproj" />
+

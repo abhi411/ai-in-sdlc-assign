@@ -1,0 +1,19 @@
+diff --git a/backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs b/backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
+--- a/backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
++++ b/backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
+@@
+     [HttpPost("{id}/approve")]
+     [RequireRole("Approver")]
+     public ActionResult<Invoice> Approve(string id)
+     {
+-        return Handle(() => _approvals.Approve(id, CurrentUser.Name));
++        try
++        {
++            return Handle(() => _approvals.Approve(id, CurrentUser.Name));
++        }
++        catch (Exception ex)
++        {
++            _logger.LogWarning(ex, "Approval failed for {InvoiceId}", id);
++            throw;
++        }
+     }

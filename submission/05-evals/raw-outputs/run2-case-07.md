@@ -1,0 +1,2 @@
+- **`backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs:34–36` — Confidence: 9/10.** Logging `{@Invoice}` and `{@Session}` serializes the full invoice and user-session details on every approval. That can expose customer names, amounts, decision notes, and user identity in logs with broader access or longer retention than the application data. Log only the identifiers and minimal audit fields needed.
+

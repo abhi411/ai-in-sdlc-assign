@@ -1,0 +1,15 @@
+diff --git a/backend/src/InvoiceApp.Api/Controllers/InvoicesController.cs b/backend/src/InvoiceApp.Api/Controllers/InvoicesController.cs
+--- a/backend/src/InvoiceApp.Api/Controllers/InvoicesController.cs
++++ b/backend/src/InvoiceApp.Api/Controllers/InvoicesController.cs
+@@ -66,6 +66,11 @@ public class InvoicesController : ApiControllerBase
+         return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, invoice);
+     }
+ 
+     [HttpPost("{id}/submit")]
+     public ActionResult<Invoice> Submit(string id) => Handle(() => _approvals.Submit(id));
++
++    [HttpDelete("{id}")]
++    [RequireRole("Admin")]
++    public IActionResult Delete(string id) =>
++        _repository.Remove(id) ? NoContent() : NotFound();
+ }

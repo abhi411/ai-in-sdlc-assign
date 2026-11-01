@@ -1,0 +1,73 @@
+run,case,model,prompt_version,verdict,finding_summary,confidence_reported,notes
+1,case-01,gpt-6-luna,v1,caught,"BulkApprove bug: nullable Ids, Admin restriction, and unhandled partial approval state",9/10–10/10,The review identified the actual defect in the supplied diff.
+1,case-02,gpt-6-luna,v1,caught,SQL injection: request-controlled customer/status values are interpolated into the query,10/10,The review identified the actual defect in the supplied diff.
+1,case-03,gpt-6-luna,v1,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,10/10,The review identified the actual defect in the supplied diff.
+1,case-04,gpt-6-luna,v1,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+1,case-05,gpt-6-luna,v1,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,9/10–10/10,The review identified the actual defect in the supplied diff.
+1,case-06,gpt-6-luna,v1,correct_clean,Clean test-only diff: no behavioral regression or test-compilation issue,n/a,The review found no actionable issue on a clean diff.
+1,case-07,gpt-6-luna,v1,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+1,case-08,gpt-6-luna,v1,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,10/10,The review identified the actual defect in the supplied diff.
+1,case-09,gpt-6-luna,v1,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+1,case-10,gpt-6-luna,v1,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+1,case-11,gpt-6-luna,v1,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",n/a,"The review checked role enforcement but missed the actual status-guard defect on Delete."
+1,case-12,gpt-6-luna,v1,false_alarm,"False alarm: claimed a missing _logger or compile break in a clean logging/rethrow change",10/10,"The diff is a defensive logging change and the review misread it as a compile defect."
+2,case-01,gpt-6-luna,v1,caught,"BulkApprove bug: nullable Ids, Admin restriction, and unhandled partial approval state",9/10–10/10,The review identified the actual defect in the supplied diff.
+2,case-02,gpt-6-luna,v1,caught,SQL injection: request-controlled customer/status values are interpolated into the query,9/10,The review identified the actual defect in the supplied diff.
+2,case-03,gpt-6-luna,v1,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,10/10,The review identified the actual defect in the supplied diff.
+2,case-04,gpt-6-luna,v1,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+2,case-05,gpt-6-luna,v1,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,10/10,The review identified the actual defect in the supplied diff.
+2,case-06,gpt-6-luna,v1,correct_clean,Clean test-only diff: no behavioral regression or test-compilation issue,n/a,The review found no actionable issue on a clean diff.
+2,case-07,gpt-6-luna,v1,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+2,case-08,gpt-6-luna,v1,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,10/10,The review identified the actual defect in the supplied diff.
+2,case-09,gpt-6-luna,v1,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+2,case-10,gpt-6-luna,v1,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+2,case-11,gpt-6-luna,v1,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",n/a,"The review checked role enforcement but missed the actual status-guard defect on Delete."
+2,case-12,gpt-6-luna,v1,false_alarm,"False alarm: claimed a missing _logger or compile break in a clean logging/rethrow change",10/10,"The diff is a defensive logging change and the review misread it as a compile defect."
+3,case-01,gpt-6-luna,v1,caught,"BulkApprove bug: nullable Ids, Admin restriction, and unhandled partial approval state",9/10–10/10,The review identified the actual defect in the supplied diff.
+3,case-02,gpt-6-luna,v1,caught,SQL injection: request-controlled customer/status values are interpolated into the query,9/10,The review identified the actual defect in the supplied diff.
+3,case-03,gpt-6-luna,v1,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,9/10,The review identified the actual defect in the supplied diff.
+3,case-04,gpt-6-luna,v1,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+3,case-05,gpt-6-luna,v1,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,10/10,The review identified the actual defect in the supplied diff.
+3,case-06,gpt-6-luna,v1,correct_clean,Clean test-only diff: no behavioral regression or test-compilation issue,n/a,The review found no actionable issue on a clean diff.
+3,case-07,gpt-6-luna,v1,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+3,case-08,gpt-6-luna,v1,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,10/10,The review identified the actual defect in the supplied diff.
+3,case-09,gpt-6-luna,v1,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+3,case-10,gpt-6-luna,v1,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+3,case-11,gpt-6-luna,v1,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",n/a,"The review checked role enforcement but missed the actual status-guard defect on Delete."
+3,case-12,gpt-6-luna,v1,false_alarm,"False alarm: claimed a missing _logger or compile break in a clean logging/rethrow change",10/10,"The diff is a defensive logging change and the review misread it as a compile defect."
+4,case-01,gpt-6-luna,v2,missed,"Missed bulk approval defect: nullable Ids, Admin denial, and partial batch failure were not reported",n/a,The review missed the defect that is present in the supplied diff.
+4,case-02,gpt-6-luna,v2,caught,SQL injection: request-controlled customer/status values are interpolated into the query,10/10,The review identified the actual defect in the supplied diff.
+4,case-03,gpt-6-luna,v2,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,10/10,The review identified the actual defect in the supplied diff.
+4,case-04,gpt-6-luna,v2,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+4,case-05,gpt-6-luna,v2,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,9/10–10/10,The review identified the actual defect in the supplied diff.
+4,case-06,gpt-6-luna,v2,correct_clean,Clean test-only diff: no behavioral regression or test-compilation issue,n/a,The review found no actionable issue on a clean diff.
+4,case-07,gpt-6-luna,v2,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+4,case-08,gpt-6-luna,v2,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,10/10,The review identified the actual defect in the supplied diff.
+4,case-09,gpt-6-luna,v2,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+4,case-10,gpt-6-luna,v2,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+4,case-11,gpt-6-luna,v2,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",7/10,"The review found a race-like concern but missed the actual status-guard defect."
+4,case-12,gpt-6-luna,v2,correct_clean,Clean defensive logging: no behavior change beyond catch and rethrow,n/a,The review correctly found no actionable issue on the clean diff.
+5,case-01,gpt-6-luna,v2,caught,"BulkApprove bug: nullable Ids, Admin restriction, and unhandled partial approval state",9/10–10/10,The review identified the actual defect in the supplied diff.
+5,case-02,gpt-6-luna,v2,caught,SQL injection: request-controlled customer/status values are interpolated into the query,9/10,The review identified the actual defect in the supplied diff.
+5,case-03,gpt-6-luna,v2,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,9/10,The review identified the actual defect in the supplied diff.
+5,case-04,gpt-6-luna,v2,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+5,case-05,gpt-6-luna,v2,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,10/10,The review identified the actual defect in the supplied diff.
+5,case-06,gpt-6-luna,v2,false_alarm,False alarm: claimed the new tests reference a missing `Pending(...)` helper,10/10,The review asserted a defect on a clean case; the issue was not present in the truth set.
+5,case-07,gpt-6-luna,v2,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+5,case-08,gpt-6-luna,v2,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,10/10,The review identified the actual defect in the supplied diff.
+5,case-09,gpt-6-luna,v2,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",9/10–10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+5,case-10,gpt-6-luna,v2,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+5,case-11,gpt-6-luna,v2,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",n/a,"The review found no defect in the provided diff."
+5,case-12,gpt-6-luna,v2,correct_clean,Clean defensive logging: no behavior change beyond catch and rethrow,n/a,The review correctly found no actionable issue on the clean diff.
+6,case-01,gpt-6-luna,v2,caught,"BulkApprove bug: nullable Ids, Admin restriction, and unhandled partial approval state",9/10–10/10,The review identified the actual defect in the supplied diff.
+6,case-02,gpt-6-luna,v2,caught,SQL injection: request-controlled customer/status values are interpolated into the query,9/10,The review identified the actual defect in the supplied diff.
+6,case-03,gpt-6-luna,v2,caught,Rounding regression: ToZero rounding before subtraction alters discount amounts,8/10,The review identified the actual defect in the supplied diff.
+6,case-04,gpt-6-luna,v2,correct_clean,Clean rename: repository field and constructor parameter renamed consistently,n/a,The review found no actionable issue on a clean diff.
+6,case-05,gpt-6-luna,v2,caught,Delete endpoint missing Admin-only access control and may not compile against current repository API,9/10,The review identified the actual defect in the supplied diff.
+6,case-06,gpt-6-luna,v2,correct_clean,Clean test-only diff: no behavioral regression or test-compilation issue,n/a,The review found no actionable issue on a clean diff.
+6,case-07,gpt-6-luna,v2,caught,Sensitive-data logging: full invoice/session objects written to logs,9/10,The review identified the actual defect in the supplied diff.
+6,case-08,gpt-6-luna,v2,caught,Thread-safety regression: ConcurrentDictionary replaced by unsynchronized Dictionary,9/10,The review identified the actual defect in the supplied diff.
+6,case-09,gpt-6-luna,v2,ambiguous,"Ambiguous README reset claim: may be documentation-only, not a code defect",10/10,Ambiguous case: complaint is about documentation semantics rather than an objectively broken code path.
+6,case-10,gpt-6-luna,v2,caught,Swallowed exceptions: catch-all returns HTTP 200 and hides failure state,10/10,The review identified the actual defect in the supplied diff.
+6,case-11,gpt-6-luna,v2,missed,"Delete path allows removing a decided invoice without a status guard; Admin-only access is not enough",n/a,"The review found no defect in the provided diff."
+6,case-12,gpt-6-luna,v2,false_alarm,"False alarm: claimed a missing _logger or compile break in a clean logging/rethrow change",10/10,"The diff is a defensive logging change and the review misread it as a compile defect."

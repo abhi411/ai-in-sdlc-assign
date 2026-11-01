@@ -1,0 +1,5 @@
+Defect: Delete is Admin-only (role check is present) but has no status guard. Remove() deletes any invoice, so an Admin can hard-delete an Approved or Rejected invoice (e.g. seeded INV-1003, Approved). 
+
+Why it matters: approval decisions must be auditable for seven years (SOC 2 Type II); deleting a decided invoice destroys that record, and once PayEx exits it could orphan a submitted payment. Delete also bypasses ApprovalService (AGENTS.md: business rules belong in Domain). Counts as CAUGHT only if the review says decided/approved invoices can be deleted (missing status or audit guard). A finding about missing authorization is wrong here: the role attribute is present. 
+
+How you saw it: As per HTTP API standards. Delete operation is used to delete a record. Hence I run the API, sign in as demo.admin, invoked DELETE /api/invoices/INV-1003 -> 204

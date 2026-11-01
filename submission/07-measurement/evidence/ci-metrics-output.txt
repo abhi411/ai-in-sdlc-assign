@@ -1,0 +1,11 @@
+runs analysed: 20  window: 2026-01-19T09:12:00Z .. 2026-02-02T15:38:00Z
+pipeline wall-clock (sum of step durations): median 1876s = 31.3 min, min 1702s, max 2108s, p90 2071s
+run failure rate: 2/20 = 10%  (95% Wilson interval 3% to 30%)
+  failed run #6 branch=fix/notification-filter event=pull_request started=2026-01-23T19:50:00Z, next green run on same branch: #7 after 6.2 h
+  failed run #14 branch=fix/approval-audit event=pull_request started=2026-01-29T23:20:00Z, next green run on same branch: #17 after 51.5 h
+slowest steps by share of total CI time:
+  Static analysis: median 480s, 26.4% of all CI time
+  End-to-end tests: median 220s, 11.3% of all CI time
+  Build container image: median 163s, 8.9% of all CI time
+  Integration tests: median 142s, 7.5% of all CI time
+  Install Playwright browsers: median 125s, 6.8% of all CI time

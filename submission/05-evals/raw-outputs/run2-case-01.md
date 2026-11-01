@@ -1,0 +1,5 @@
+- **`backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs:48`** — `CurrentUser.Name` is not defined in this controller or its base class; the project gets the signed-in user from `HttpContext.GetSession().Username`. As written, this won’t compile. **Confidence: 10/10**
+- **`backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs:47`** — The action-level `[RequireRole("Approver")]` also denies Admins, despite the controller-level attribute allowing both Approver and Admin. Admins therefore can’t use this endpoint. **Confidence: 10/10**
+- **`backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs:52–53`** — If an ID is missing or can’t be approved, `Approve` throws after any earlier IDs have already been approved. The request then fails without returning those earlier results, leaving a partial batch. **Confidence: 9/10**
+- **`backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs:44, 52`** — `Ids` is nullable but enumerated without a null check; a request with `"ids": null` causes a `NullReferenceException`. **Confidence: 9/10**
+

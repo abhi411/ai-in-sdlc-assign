@@ -1,0 +1,6 @@
+0616158|2026-10-12T10:20:35+00:00|Add Session 3 operations material: incident packs, CI pipeline and review evals
+3834913|2026-10-05T10:20:47+00:00|Add Playwright e2e setup and coverage collector
+4421968|2026-10-05T10:19:03+00:00|Add tests, CI, agent conventions and use-case briefs
+8214bc4|2026-10-05T10:19:03+00:00|Add web UI for invoices and approvals
+dc182d9|2026-10-05T10:19:03+00:00|Add API: sign-in, invoices and approvals endpoints
+754f6a1|2026-10-05T10:19:03+00:00|Add domain: invoice lifecycle and discount rules

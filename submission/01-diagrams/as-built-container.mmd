@@ -1,0 +1,40 @@
+flowchart LR
+  user([User: Approver / Admin])
+  subgraph browser["Browser"]
+    spa["Static web UI<br/>wwwroot/index.html + app.js [E1]<br/>token kept in sessionStorage [E1]"]
+  end
+  subgraph host["ASP.NET Core 8 host: InvoiceApp.Api (single process) [E2]"]
+    static["Static files<br/>UseDefaultFiles / UseStaticFiles [E3]"]
+    mw["SessionAuthMiddleware<br/>bearer token check on /api/* [E4]"]
+    sess[("SessionStore<br/>in-memory ConcurrentDictionary [E5]")]
+    authc["AuthController<br/>login / logout [E7]"]
+    users["DemoUsersOptions<br/>from appsettings.json 'Users' [E7a]"]
+    invc["InvoicesController<br/>list, get, create, submit, delete [E8]"]
+    appc["ApprovalsController<br/>approve / reject [E9]"]
+    role{{"RequireRoleAttribute filter [E6]"}}
+    base["ApiControllerBase.Handle<br/>exception to 404/409/400 [E10]"]
+    repo[("InMemoryInvoiceRepository<br/>List + lock, seeded, singleton [E13]")]
+  end
+  subgraph domain["InvoiceApp.Domain (no outward dependencies) [E11]"]
+    svc["ApprovalService<br/>Submit / Approve / Reject [E11]"]
+    irepo["IInvoiceRepository (interface) [E12]"]
+    inv["Invoice, InvoiceStatus [E14]"]
+  end
+  user --> spa
+  spa -- "GET static assets" --> static
+  spa -- "HTTP /api/* + Bearer token [E1]" --> mw
+  mw -- "lookup token" --> sess
+  mw --> authc
+  mw --> invc
+  mw --> appc
+  authc --> users
+  authc --> sess
+  invc -- "Delete only [E6]" --- role
+  appc --- role
+  invc -. "inherits [E10]" .-> base
+  appc -. "inherits [E10]" .-> base
+  appc --> svc
+  invc -- "Submit only [E8]" --> svc
+  invc -- "reads/creates/deletes directly [E8]" --> irepo
+  svc --> irepo
+  repo -. "implements [E13]" .-> irepo

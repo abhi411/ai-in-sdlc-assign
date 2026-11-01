@@ -1,0 +1,32 @@
+sequenceDiagram
+  autonumber
+  actor U as Approver
+  participant UI as Browser app.js [E1]
+  participant MW as SessionAuthMiddleware [E4]
+  participant SS as SessionStore [E5]
+  participant RR as RequireRole filter [E6]
+  participant AC as ApprovalsController.Approve [E9]
+  participant H as ApiControllerBase.Handle [E10]
+  participant AS as ApprovalService.Approve [E11]
+  participant R as InMemoryInvoiceRepository [E13]
+
+  U->>UI: click Approve [E1 decide()]
+  UI->>MW: POST /api/approvals/{id}/approve, Authorization Bearer token
+  MW->>SS: Get(token)
+  SS-->>MW: UserSession(Username, Role)
+  Note over MW: no session gives 401, otherwise the session is stored in HttpContext.Items
+  MW->>RR: next(context), MVC routes to action
+  Note over RR: role not in Approver/Admin gives 403 before the action runs
+  RR->>AC: OnActionExecuting passes
+  AC->>H: Handle(() => Approve(id, session.Username))
+  H->>AS: Approve(invoiceId, approver)
+  AS->>R: GetById(id) [lock]
+  R-->>AS: the stored Invoice object (same reference)
+  Note over AS: EnsurePending: throws InvalidOperationException unless PendingApproval
+  AS->>AS: set Status=Approved, DecidedBy, DecidedAt (mutates the stored object)
+  AS->>R: Update(invoice) [lock]
+  AS-->>H: Invoice
+  H-->>AC: Ok(invoice)
+  AC-->>UI: 200 JSON invoice
+  Note over H: KeyNotFound gives 404, InvalidOperation gives 409, Argument gives 400
+  UI->>UI: refresh() reloads GET /api/invoices
