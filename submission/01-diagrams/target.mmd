@@ -4,17 +4,17 @@ flowchart LR
 
   spa["Web UI (static)<br/>[E1]"]:::existing
   api["InvoiceApp.Api on Azure App Service<br/>controllers, auth middleware [E2,E4,E8,E9]"]:::existing
-  dom["ApprovalService (Domain) [E11]<br/>needs change: approve writes the decision<br/>and the outbox row in ONE transaction"]:::existing
+  dom["ApprovalService (Domain) [E11]<br/>writes approval + outbox row in ONE SQL transaction"]:::existing
   irepo["IInvoiceRepository [E12]"]:::existing
   mem["InMemoryInvoiceRepository [E13]<br/>kept for tests and demo only"]:::existing
 
   sqlrepo["SqlInvoiceRepository<br/>(EF Core or Dapper)"]:::planned
   sql[("Azure SQL<br/>Invoices, ApprovalAudit (7-yr retention),<br/>PaymentOutbox, PaymentSubmission")]:::planned
-  worker["PayEx submission worker<br/>BackgroundService / separate App Service WebJob"]:::planned
+  worker["PayEx submission worker<br/>BackgroundService / Azure Worker"]:::planned
   payex["PayExClient<br/>typed HttpClient via IHttpClientFactory,<br/>idempotency key = invoiceId + approvalId"]:::planned
   ext(["PayEx (external)<br/>30 s timeout, outcome may be unknown"]):::planned
   recon["Reconciliation job<br/>(nightly + on-demand for UNKNOWN rows)"]:::planned
-  sb["Azure Service Bus<br/>(provisioned, unused today)<br/>optional: wake the worker / notify"]:::planned
+  sb["Azure Service Bus<br/>queue trigger / wake worker"]:::planned
   obs["Telemetry and alerts<br/>(App Insights): outbox age, UNKNOWN count,<br/>duplicate-key rejections"]:::planned
   ci["GitHub Actions CI [ci.yml]<br/>adds architecture test + migrations check"]:::existing
 
@@ -24,12 +24,13 @@ flowchart LR
   mem -. implements .-> irepo
   sqlrepo -. implements .-> irepo
   sqlrepo --> sql
-  worker -- "poll PENDING rows (SKIP LOCKED style claim)" --> sql
+  api -- "commit approval + audit + outbox row" --> sql
+  worker -- "read published outbox rows (SKIP LOCKED)" --> sql
   worker --> payex
   payex -- "POST with idempotency key" --> ext
   recon --> sql
   recon -- "lookup by reference / key" --> ext
-  worker -.-> sb
+  sb -- "notify / wake" --> worker
   api -.-> obs
   worker -.-> obs
   ci -. "gates changes" .-> api

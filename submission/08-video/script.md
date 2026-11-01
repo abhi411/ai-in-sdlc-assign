@@ -1,55 +1,110 @@
-# Demo video script (target 9 minutes; record it yourself)
+# Demo video script (target 9 minutes)
 
-## Exact on-screen files per segment
+Note: the folder is `08-video` in your submission (not `09-video`). The AI logs are in `09-ai-logs`.
 
-| Time | Exact on-screen items | What to show |
-|---|---|---|
-| 0:00-0:45 | [README.md](README.md), [AGENTS.md](../AGENTS.md), [submission/README.md](../README.md) | Start with the repo framing: the app is an invoice approval demo, and the ops folder is scenario evidence rather than live app behavior. |
-| 0:45-2:15 | [submission/01-diagrams/as-built-container.svg](../01-diagrams/as-built-container.svg), [submission/01-diagrams/as-built-sequence.svg](../01-diagrams/as-built-sequence.svg), [submission/01-diagrams/citations.md](../01-diagrams/citations.md), [submission/01-diagrams/corrections.md](../01-diagrams/corrections.md) | Show the built architecture and the actual citations plus the corrections made during verification. |
-| 2:15-3:15 | [submission/01-diagrams/target.mmd](../01-diagrams/target.mmd), [submission/02-arch-test/RUN.md](../02-arch-test/RUN.md), [submission/02-arch-test/pass.txt](../02-arch-test/pass.txt), [submission/02-arch-test/fail.txt](../02-arch-test/fail.txt) | Show the architecture rule, then the pass result and the failed sabotage proof. |
-| 3:15-4:30 | [backend/src/InvoiceApp.Domain/Invoice.cs](../../backend/src/InvoiceApp.Domain/Invoice.cs), [submission/03-decision-record/exactly-once-adr.md](../03-decision-record/exactly-once-adr.md), [submission/03-decision-record/race-evidence.md](../03-decision-record/race-evidence.md) | Show the domain model, the ADR, and the race evidence. |
-| 4:30-5:30 | [submission/04-autonomy-policy/policy.md](../04-autonomy-policy/policy.md), [submission/06-risk-audit/risk-audit.md](../06-risk-audit/risk-audit.md) | Show the L1 day-one autonomy policy and the risk audit decision. |
-| 5:30-6:45 | [submission/05-evals/results.md](../05-evals/results.md), [submission/05-evals/results.csv](../05-evals/results.csv), [submission/05-evals/my-cases/README.md](../05-evals/my-cases/README.md) | Show the prompt-change comparison and the final evaluation outcomes. |
-| 6:45-7:45 | [submission/07-measurement/plan.md](../07-measurement/plan.md), [submission/07-measurement/evidence/capture_git_metrics_output.txt](../07-measurement/evidence/capture_git_metrics_output.txt), [submission/07-measurement/evidence/ci-metrics-output.txt](../07-measurement/evidence/ci-metrics-output.txt) | Show the live repo numbers and the scenario-only CI numbers with the sample-size caveat. |
-| 7:45-8:30 | [submission/09-ai-logs/ai-log.md](../09-ai-logs/ai-log.md), [submission/09-ai-logs/wrong-or-useless.md](../09-ai-logs/wrong-or-useless.md) | Show the AI log and the specific failure modes that were corrected. |
-| 8:30-9:00 | [submission/08-video/demo-run.sh](demo-run.sh) | Show the demo script that replays the repo evidence safely. |
+How to use: read the lines in quotes out loud. Things in [square brackets] are numbers or facts you must fill in or confirm
+before recording. Speak slowly; about 1,000 spoken words, plus the time the commands take to run, gives roughly 8 to 9 minutes.
 
-## Narration (word-for-word script)
+## What to have open (in order)
 
-"This is the repo I used for the AI-in-SDLC assignment, and the first thing to be clear about is that the ops folder is scenario material, not the current runtime. The real app is the invoice approval demo in the backend folder. The project guidance in AGENTS.md says the ops folder describes a planned deployment, and that is exactly how I treated it: as evidence for a future architecture, not as live code. That distinction is important because the decision record and the risk audit are grounded in the repo as checked out, not in the scenario incident data."
+| Time | Show on screen |
+|---|---|
+| 0:00-0:40 | `AGENTS.md`, `ops/README.md` |
+| 0:40-2:00 | `01-diagrams/as-built-container.svg`, `as-built-sequence.svg`, `corrections.md`, `inferred.md` |
+| 2:00-3:30 | `01-diagrams/target.mmd`, `02-arch-test/RUN.md`, terminal: run the test |
+| 3:30-5:00 | `03-decision-record/exactly-once-adr.md` (the "Where the agent was wrong or useless" section) |
+| 5:00-6:00 | `04-autonomy-policy/policy.md`, `06-risk-audit/risk-audit.md` |
+| 6:00-7:30 | `05-evals/results.md`, `results.csv` |
+| 7:30-8:30 | `07-measurement/plan.md` and the two evidence outputs |
+| 8:30-9:00 | `09-ai-logs/ai-log.md`, `wrong-or-useless.md` |
 
-"The first artifact I want to show is the as-built architecture. This container diagram and the sequence diagram show the approval flow from the web UI through the API, into the domain service, and then through the repository. I also checked the citations against the real source files, and I corrected the places where the earlier wording was too broad or not specific enough. The key point is that the domain service owns the invoice lifecycle, and the repo is deliberately separate from the web layer. That was one of the main things I verified when I rebuilt the evidence trail."
+## What to say
 
-"I also checked the target design, which shows the planned future state: a durable SQL-backed repository, a background worker for payment submission, and a reconciliation path for ambiguous outcomes. That target is intentionally labeled as planned. The code today does not have PayEx or Azure SQL in the app; it has an in-memory repository and a domain service. So the ADR and the risk audit are careful about what is theory and what is implemented."
+**1. Intro (0:00)**
 
-"The architecture test is the most concrete proof that the seam is still correct. The rule I chose says the domain project must not depend on the web or storage layer. I ran the real command: dotnet test backend/InvoiceApp.sln --filter FullyQualifiedName~ArchitectureTests. The pass result was one test passed, zero failed. That is the evidence in submission/02-arch-test/pass.txt."
+"This is my submission for the AI in SDLC workshop. The service is an invoice approval app. One thing to know first: the
+`ops` folder describes the planned production setup, not the code as it is today. Today the app has no database and no
+PayEx. It keeps invoices in memory. I kept that difference clear in everything I wrote."
 
-"Then I did the sabotage proof. I inserted the exact forbidden field in the domain file, the same pattern described in RUN.md: a System.Net.Http.HttpClient field placed at the namespace level. That is not inside the Invoice class, and the compiler rejects it with CS0116: a namespace cannot directly contain members such as fields, methods or statements. The failing output is in submission/02-arch-test/fail.txt. The key point is that the architecture guard is valid; the failure is exactly what you would expect when the rule is broken. The script then reverts the injected field immediately so the repo is left clean."
+**2. Diagrams (0:40)**
 
-"The concurrency evidence is separate from the architecture check. The project has a race check in backend/tests/InvoiceApp.Tests/ApprovalConcurrencyTests.cs. It starts with one pending invoice, then runs 32 parallel approval attempts against the same in-memory repository. The real output in the test run reports 32 total attempts, 1 success, and 31 failures. That means the double-approve race is not reliably reproducible in this exact run, but the operation is still not atomic. The domain code checks pending status and then updates the invoice in separate steps, which is a risk when moving to a durable store. That is why the ADR treats the concurrency fix as a required design decision for the future system."
+"Here are the as-built diagrams. Every box and arrow points to a file or a symbol in the code. The citation list shows where.
+I also listed what the AI guessed instead of read. When I checked, some of its claims were wrong, and I fixed them. The list
+of fixes is in `corrections.md`. Now the target diagram. It shows the future setup with a database, a background worker and
+PayEx. Anything that does not exist yet is marked as planned."
 
-"The exact-once decision record is the centerpiece of the design reasoning. It is not claiming that the current code already does payment submission; it is a forward-looking ADR for a future PayEx integration. The final decision chooses the transactional outbox and worker pattern instead of a dedupe-only design with more unsupported assumptions. The reason is straightforward: the safer decision comes from the evidence that we actually have, not from a provider contract that has not been verified. The ADR also has a section called Where the agent was wrong or useless, and it records the places where earlier analysis assumed features that were not supported by the repo evidence."
+**3. Architecture test (2:00)**
 
-"The autonomy policy is intentionally narrow. It is L1, day-one draft-only. During the first 30 minutes of an alert, the agent may read exported evidence, build a timeline, rank likely causes, and draft a human-verifiable update. It may not access live systems, restart services, alter config, roll back releases, or decide finance recovery. That is exactly the level of authority the policy allows. It is not a general production incident command policy. The risk audit then applies the lethal trifecta test: private data, untrusted content, and external communication. The recommendation is to remove the external communication leg for incident workflows, because the Playwright server help confirms that host and origin filtering is not a security boundary and does not affect redirects."
+"I wrote one test for one rule: the Domain project must not depend on the web layer or on HTTP code. Domain is where the
+business rules live, and I want it to stay free of web and storage code. I run it with this command."
 
-"The evaluation work is also tied to real repo facts. The results table shows six runs using the baseline prompt and six using the changed prompt, with 12 cases in each matrix. The v1 runs caught all the real defects with no missed defect on the stable pattern, while the v2 runs showed one miss on case 01 and one false alarm on case 06. The summary is explicit about sample size: a one-case swing is not a strong signal by itself, and the evidence does not support a strong prompt-to-prompt effect. The key result is that the obvious defects are generally caught while the noise is mostly single-run variation."
+Run: `dotnet test backend/InvoiceApp.sln --filter FullyQualifiedName~ArchitectureTests`
 
-"The measurement plan is careful about what is scenario data and what is real. The live repo pairs are: zero merged PRs and one CI run with zero failures. Those are the only two direct live-repo numbers with actual evidence from the current repository. The plan also keeps the scenario metrics separate: ops/pipeline/run-timings.csv says 20 runs, median 31.3 minutes, range 28.4 to 35.1 minutes, and those are marked as scenario data because the ops folder says the numbers are invented. This is exactly the right distinction for a small repo with limited live history."
+"It passes: one test passed, zero failed. Now I break the rule on purpose. I add an HttpClient field inside the Invoice
+class and run the test again."
 
-"The AI log and the wrong-or-useless notes are part of the submission for a reason. They show which phases were executed, what was accepted, what was rejected, and what was corrected after the repo was checked. The log includes the citation verification pass, the architecture test and race evidence, the policy and risk audit, the eval cases, and the final measurement pass. That is not a generic summary. It is the real record of the work in this repo."
+[Redo this first: put the field INSIDE the class, run the test, and make sure it fails as a TEST failure, not a compile
+error. Then say:] "The test fails and names the bad dependency. So the test really catches the mistake. I remove the line,
+and it passes again."
 
-"The demo wrapper in submission/08-video/demo-run.sh is explicitly built to be safe to rerun. It creates a temporary backup of the domain file, applies the sabotage, runs the architected check to show the expected compile failure, and then restores the file even if the script is interrupted. The same script also prints the git branch, the architecture pass, the sabotage failure, the concurrency test, the eval summary, and the captured metrics in order. That makes it quick to replay during a live handoff or demo without leaving the repo dirty."
+[If you do not redo it, say this instead:] "My first attempt only gave a compile error, so it did not prove that the test
+catches the mistake. I want to be honest about that."
 
-"That is the final narrative: we stayed honest about what exists in code, we distinguished scenario evidence from live repo data, and we used the verified outputs in the repo as the source of truth. The submission is a pack of real evidence, not a generic story. The numbers, the pass/fail outputs, and the repository trace are the reasons this work holds together."
+**4. Decision record (3:30)**
 
-## Pre-recording checklist
+"The question is how to make sure an approved invoice reaches PayEx exactly once. PayEx can time out, and a timeout does not
+mean the submission failed. I compared three options: an idempotency key with a dedupe table, a transactional outbox with a
+worker, and sending right away with a nightly check. My final choice is the outbox with a worker. The approval, the audit
+record and the payment event are saved in one database transaction, so they succeed or fail together. I chose it because we
+do not know whether PayEx supports idempotency keys or lookups. The outbox does not depend on that."
 
-- Confirm the repo root is the assignment folder and the working tree is stable.
-- Verify [submission/08-video/demo-run.sh](demo-run.sh) is executable and has no stale sabotage left in [backend/src/InvoiceApp.Domain/Invoice.cs](../../backend/src/InvoiceApp.Domain/Invoice.cs).
-- Run the script once from the repo root to confirm the pass/fail sequence is deterministic.
-- Keep terminal font large enough to read the banner and the command output during the recording.
-- Record in full-screen terminal mode so the branch output, the architecture pass, the sabotage compile error, and the concurrent approval numbers remain readable.
-- Before starting, open the exact files referenced in the segment list so they are ready to switch to on screen.
-- Keep the narration matched to the actual outputs: 1 passed, 0 failed; CS0116 on the sabotage run; 32 attempts, 1 success, 31 failures; live repo metrics of 0 merged PRs and 1 CI run / 0 failures.
-- Do not mention the scenario CI numbers as live production numbers; identify them as scenario-only data from ops.
-- After recording, spot-check one final time that the repo file is restored and no sabotage remains before finishing.
+"I also tested the AI's advice. I told it I preferred another option, and I asked how each option fails at 3 a.m. on the
+last day of the month, and what each costs. [Say honestly that the 3 a.m. and cost checks were done on Option 1 first.]
+The section 'Where the agent was wrong or useless' lists exactly where the AI was wrong, with examples."
+
+"I also tried to reproduce a double-approve race with 32 parallel approvals. Only one succeeded, so I could not show it
+failing. But the code checks the status and then updates it in separate steps. That is not safe with a real database, so
+the decision record says to fix it as part of the move."
+
+**5. Autonomy policy and risk audit (5:00)**
+
+"The policy covers first-response incident summaries. On day one the team runs at level one, draft only. The AI can read
+exported logs, build a timeline, rank likely causes and draft an update. It cannot touch live systems, restart anything or
+change config. A named person approves anything above level one. I chose this level because two of the six engineers are new
+to the code, and they may not catch a wrong summary."
+
+"The risk audit checks the lethal trifecta: private data, untrusted content, and a way to send data out. My decision is to
+remove the outside-communication leg for the incident workflow. The agent only gets exported, redacted evidence, with no
+browser and no outbound network. I will revisit this if the agent ever needs live access."
+
+**6. Evaluation (6:00)**
+
+"The repo has ten fixed review cases. I added two of my own: one real defect and one clean change. [Say where they came
+from: found by reading the code I was given.] I ran all twelve cases three times with the first prompt, then changed only
+the prompt and ran three more times."
+
+"Results: first prompt caught [X of 24] defects and had [Y of 9] false alarms on clean cases. Second prompt caught
+[X of 24] and had [Y of 9] false alarms. [One sentence: better, worse or the same.] With only twelve cases and three runs,
+a difference of one or two cases is not strong evidence, so I would not call this a real improvement yet."
+
+**7. Measurement plan (7:30)**
+
+"I would measure three things before the rotation: lead time for changes, change failure rate, and review turnaround. I
+could get two of them today from the repo and its CI history. From the CI history file, twenty runs had a median time of
+31.3 minutes and two failures, so a ten percent failure rate. But the `ops` folder says that data is made up, so it is only
+a scenario baseline. The live repo has [0 merged PRs and 1 CI run], which is too small to measure anything. Review
+turnaround cannot be captured yet, because there is no review data. I will re-measure weekly and always show the sample
+size."
+
+**8. AI logs and close (8:30)**
+
+"The AI logs show what I asked the AI, what I accepted and what I rejected. The file `wrong-or-useless.md` lists the specific
+mistakes I corrected. In short, I separated what exists from what is planned, I tested the AI's advice instead of trusting
+it, and I used numbers I measured, with their limits stated. Thank you."
+
+## Before you record
+
+- Redo the sabotage test (section 3) and replace `fail.txt` with the real test failure.
+- Fill in every [bracket] above; remove the line you do not use.
+- Make sure `Invoice.cs` is back to normal after the sabotage (`git diff` should show nothing).
+- Use a large terminal font. Keep the video between 8 and 10 minutes, saved as MP4, then paste the link into `VIDEO_LINK.md`.

@@ -1,6 +1,6 @@
 # Citation list (as-built)
 
-Every ID below is used in as-built-container.mmd, as-built-sequence.mmd or target.mmd. Paths are relative to the repo root. "Verified" means I read the file in the uploaded zip (ai-in-sdlc-assignment-main.zip). YOU still need to open each one (Step 1.3) and tick the last column.
+Every ID below is used in as-built-container.mmd, as-built-sequence.mmd or target.mmd. Paths are relative to the repo root. "Verified" means I read the file in the uploaded zip (ai-in-sdlc-assignment-main.zip).
 
 | ID | Element | File | Symbol | Status | You checked |
 |---|---|---|---|---|---|
@@ -26,4 +26,4 @@ Every ID below is used in as-built-container.mmd, as-built-sequence.mmd or targe
 | E19 | Project references: Api -> Domain, Tests -> Domain, Domain -> nothing | backend/src/InvoiceApp.Api/InvoiceApp.Api.csproj, backend/tests/InvoiceApp.Tests/InvoiceApp.Tests.csproj, backend/src/InvoiceApp.Domain/InvoiceApp.Domain.csproj | ProjectReference | Verified — the API and tests reference the Domain project, and the Domain project has no project references. | [x] |
 
 ## Absence checks (things that do NOT exist in code today)
-Searched backend/ (.cs, .csproj, .json) for: DbContext, SqlConnection, EntityFramework, ServiceBus, PayEx, HttpClient, ILogger, BackgroundService, IHostedService, /health, MapHealthChecks. No matches for any. No Dockerfile at repo root. e2e/tests and e2e/pages are empty. Re-run yourself: grep -rIE "DbContext|SqlConnection|EntityFramework|ServiceBus|PayEx|HttpClient|ILogger|BackgroundService|IHostedService|MapHealthChecks" backend
+Searched backend/ (.cs, .csproj, .json) for: DbContext, SqlConnection, EntityFramework, ServiceBus, PayEx, HttpClient, ILogger, BackgroundService, IHostedService, /health, MapHealthChecks. No matches for any. No Dockerfile at repo root. e2e/tests and e2e/pages are empty.

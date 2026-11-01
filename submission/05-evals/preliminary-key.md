@@ -1,6 +1,5 @@
 # Preliminary reading of the 10 cases (Claude, NOT ground truth)
 
-
 | Case | My reading | Reason |
 |---|---|---|
 | 01 | Defect | BulkApprove loops over request.Ids with no null check (Ids is nullable) and no atomicity: a failure midway leaves earlier invoices approved and returns an exception |
@@ -14,4 +13,4 @@
 | 09 | Ambiguous | Config change is harmless but the new README text claims signing out resets data, which is false in this code |
 | 10 | Defect | catch (Exception) returns 200 "completed", hiding real failures |
 
-So roughly 8 defective, 3 clean (04, 06), 1 ambiguous (09). With only 3 clean cases the false alarm rate is very coarse: one false alarm moves it by 50 percentage points. Your added clean case helps.
+So roughly 7 defective, 2 clean (04, 06), 1 ambiguous (09). With only 2 clean cases the false alarm rate is very coarse: one false alarm moves it by 50 percentage points.
